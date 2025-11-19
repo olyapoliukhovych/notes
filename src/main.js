@@ -14,3 +14,32 @@
       <p>Текст</p>
   </li>
 */
+
+import { tasksForm, tasksList } from "./js/refs";
+import { createTask } from "./js/tasks";
+import { loadLS, saveLS } from "./js/local-storage-api";
+import { renderTask, initRender } from "./js/render-tasks";
+
+const app = { tasks: loadLS() };
+initRender(app.tasks, tasksList);
+
+tasksForm.addEventListener("submit", (event) => {
+  createTask(event, app.tasks);
+
+  saveLS(app.tasks);
+});
+
+function deleteListItem(event) {
+  if (event.target.nodeName !== "BUTTON") return;
+
+  const taskEl = event.target.closest(".task-list-item");
+
+  const { id } = taskEl.dataset;
+
+  app.tasks = app.tasks.filter((obj) => obj.id !== id);
+
+  saveLS(app.tasks);
+  initRender(app.tasks, tasksList);
+}
+
+tasksList.addEventListener("click", deleteListItem);
